@@ -1,6 +1,6 @@
 github-getter
 =============
 
-search github repos
+Searh GitHub Repos from your own site
 
-this is your typical UI front end test
+This is a standard UI interview test
