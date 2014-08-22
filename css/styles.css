@@ -1,0 +1,23 @@
+td {
+    padding: 5px;
+}
+th {
+    text-align: left;
+}
+
+.details-container {
+    background-color: #999999;
+    width: 100%;
+}
+
+.list-item {
+    /*Add Styles here*/
+}
+
+.name-label, .description-label, .owner-label, .language-label, .url-label, .watchers-label {
+    /*Add Styles here*/
+}
+
+.name, .description, .owner, .language, .url, .watchers {
+    /*Add Styles here*/
+}
