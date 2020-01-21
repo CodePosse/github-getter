@@ -1,13 +1,13 @@
-(function (mih, $, undefined) {
-    (function (fed, $, undefined) {
+(function(mih, $, undefined) {
+    (function(fed, $, undefined) {
 
-        fed.GithubGetter = function (options) {
+        fed.GithubGetter = function(options) {
 
             var self = this;
 
             self.ui = {
 
-                init: function () {
+                init: function() {
 
 
                     /*
@@ -22,10 +22,10 @@
 
                     self.ui.$$loading = null;
                     Object.defineProperty(self.ui, '$loading', {
-                        get: function () {
+                        get: function() {
                             return this.$$loading
                         },
-                        set: function (value) {
+                        set: function(value) {
                             this.$$loading = value;
                             value ? this.$loadingContainer.show() : this.$loadingContainer.hide();
                             value ? this.$listContainer.hide() : this.$listContainer.show();
@@ -34,10 +34,10 @@
 
                     self.ui.$$error = null;
                     Object.defineProperty(self.ui, '$error', {
-                        get: function () {
+                        get: function() {
                             return this.$$error
                         },
-                        set: function (value) {
+                        set: function(value) {
                             this.$$error = value;
                             value ? this.$errorContainer.show() : this.$errorContainer.hide();
                         }
@@ -55,24 +55,24 @@
                     self.ui.$errorContainer = $('.error-container').hide();
 
                     self.ui.$searchInput = $('.search-input')
-                        .on(self.ui.events.KEYUP, function (event) {
+                        .on(self.ui.events.KEYUP, function(event) {
                             if (event.target.value.length > 5) {
                                 self.ui.triggerSearch();
                             }
                         });
 
                     self.ui.$searchTrigger = $('.search-trigger')
-                        .on(self.ui.events.CLICK, function () {
+                        .on(self.ui.events.CLICK, function() {
                             self.ui.triggerSearch();
                         });
 
-                    self.ui.$rootContainer.on(self.ui.events.REPOSITORY_SELECT, function (event, args) {
+                    self.ui.$rootContainer.on(self.ui.events.REPOSITORY_SELECT, function(event, args) {
                         var item = args.data;
-                        var data = self.ui.renderDetails({data: item});
+                        var data = self.ui.renderDetails({ data: item });
                         self.ui.$detailsContainer
                             .html(data)
                             .show()
-                            .on(self.ui.events.CLICK, function () {
+                            .on(self.ui.events.CLICK, function() {
                                 self.ui.$detailsContainer
                                     .html('')
                                     .hide();
@@ -84,37 +84,37 @@
                      PUBLIC FUNCTIONS
                      */
 
-                    self.ui.triggerSearch = function () {
+                    self.ui.triggerSearch = function() {
 
                         var query = self.ui.$searchInput.val();
                         self.ui.$loading = self.service.searchRepositories(query).then(
-                            function (result) {
+                                function(result) {
 
-                                self.data.cache = result = result.items; // GitHub result format
+                                    self.data.cache = result = result.items; // GitHub result format
 
-                                result = _.map(result, function (item) {
-                                    item = {
-                                        id: item.id,
-                                        name: item.name,
-                                        owner: item.owner.login,
-                                        language: item.language
-                                    }
-                                    return item;
-                                });
-                                result = self.ui.renderList(result);
-                                self.ui.$listContainer.html(result);
+                                    result = _.map(result, function(item) {
+                                        item = {
+                                            id: item.id,
+                                            name: item.name,
+                                            owner: item.owner.login,
+                                            language: item.language
+                                        }
+                                        return item;
+                                    });
+                                    result = self.ui.renderList(result);
+                                    self.ui.$listContainer.html(result);
 
-                                $('.list-item > td > button').on(self.ui.events.CLICK, self.ui.itemSelectEventHandler);
-                            },
-                            function (error) {
-                                self.ui.$error = error;
-                            })
-                            .always(function () {
+                                    $('.list-item > td > button').on(self.ui.events.CLICK, self.ui.itemSelectEventHandler);
+                                },
+                                function(error) {
+                                    self.ui.$error = error;
+                                })
+                            .always(function() {
                                 self.ui.$loading = null;
                             });
                     }
 
-                    self.ui.itemSelectEventHandler = function (event) {
+                    self.ui.itemSelectEventHandler = function(event) {
                         // HACK not good to use parentElements, but a quick fix
                         var index = event.currentTarget.parentElement.parentElement.attributes['data-index'].value;
                         index = Number(index);
@@ -127,20 +127,20 @@
                      RENDER FUNCTIONS
                      */
 
-                    self.ui.renderList = function (items) {
-                        items = _.map(items, function (item, index) {
+                    self.ui.renderList = function(items) {
+                        items = _.map(items, function(item, index) {
                             item = _.extend(item, {
                                 index: index
                             });
-                            item = self.ui.templates.repositoryListItem({data: item});
+                            item = self.ui.templates.repositoryListItem({ data: item });
                             return item;
                         });
                         items = items.join('');
-                        items = self.ui.templates.repositoryList({data: items});
+                        items = self.ui.templates.repositoryList({ data: items });
                         return items;
                     }
 
-                    self.ui.renderDetails = function (item) {
+                    self.ui.renderDetails = function(item) {
                         item = self.ui.templates.repositoryDetails(item)
                         return item;
                     }
@@ -155,29 +155,29 @@
                     self.ui.templates = {
                         repositoryList: _.template('' +
                             '<table>' +
-                                '<thead>' +
-                                    '<tr>' +
-                                        '<th>Name</th>' +
-                                        '<th>Owner</th>' +
-                                        '<th>Language</th>' +
-                                    '</tr>' +
-                                '</thead>' +
-                                '{{data}}' +
+                            '<thead>' +
+                            '<tr>' +
+                            '<th>Name</th>' +
+                            '<th>Owner</th>' +
+                            '<th>Language</th>' +
+                            '</tr>' +
+                            '</thead>' +
+                            '{{data}}' +
                             '</table>'),
                         repositoryListItem: _.template('' +
                             '<tr class="list-item" data-id="{{data.id}}" data-index="{{data.index}}">' +
-                                '<td><span class="name">{{data.name}}</span></td>' +
-                                '<td><span class="owner">{{data.owner}}</span></td>' +
-                                '<td><span class="language">{{data.language}}</span></td>' +
-                                '<td><button type="button">Show</button></td>' +
+                            '<td><span class="name">{{data.name}}</span></td>' +
+                            '<td><span class="owner">{{data.owner}}</span></td>' +
+                            '<td><span class="language">{{data.language}}</span></td>' +
+                            '<td><button type="button">Show</button></td>' +
                             '</tr>'),
                         repositoryDetails: _.template('' +
                             '<table>' +
-                                '<tr><td><span class="label name-label">Name:</span></td><td><span class="name">{{data.name}}</span></td></tr>' +
-                                '<tr><td><span class="label description-label">Description:</span></td><td><span class="description">{{data.description}}</span></td></tr>' +
-                                '<tr><td><span class="label url-label">URL:</span></td><td><span class="url"><a href="{{data.html_url}}" target="_blank">{{data.html_url}}</a></span></td></tr>' +
-                                '<tr><td><span class="label language-label">Language:</span></td><td><span class="language">{{data.language}}</span></td></tr>' +
-                                '<tr><td><span class="label watchers-label">Watchers:</span></td><td><span class="watchers">{{data.watchers}}</span></td></tr>' +
+                            '<tr><td><span class="label name-label">Name:</span></td><td><span class="name">{{data.name}}</span></td></tr>' +
+                            '<tr><td><span class="label description-label">Description:</span></td><td><span class="description">{{data.description}}</span></td></tr>' +
+                            '<tr><td><span class="label url-label">URL:</span></td><td><span class="url"><a href="{{data.html_url}}" target="_blank">{{data.html_url}}</a></span></td></tr>' +
+                            '<tr><td><span class="label language-label">Language:</span></td><td><span class="language">{{data.language}}</span></td></tr>' +
+                            '<tr><td><span class="label watchers-label">Watchers:</span></td><td><span class="watchers">{{data.watchers}}</span></td></tr>' +
                             '</table>')
                     }
                 }
@@ -185,16 +185,16 @@
 
 
             self.service = {
-                searchRepositories: function (query) {
+                searchRepositories: function(query) {
                     var q = $.Deferred();
                     var settings = {
                         url: options.api.baseUrl + '/search/repositories',
                         type: 'GET',
                         data: { q: query },
-                        success: function (data) {
+                        success: function(data) {
                             q.resolve(data);
                         },
-                        error: function (error) {
+                        error: function(error) {
                             q.reject(error);
                         }
                     }
@@ -209,7 +209,7 @@
             }
 
 
-            self.init = function () {
+            self.init = function() {
                 self.ui.init();
             }
         }
@@ -218,7 +218,7 @@
 }(window.mih = window.mih || {}, jQuery));
 
 
-$(document).ready(function () {
+$(document).ready(function() {
     var options = {
         api: {
             baseUrl: 'https://api.github.com'

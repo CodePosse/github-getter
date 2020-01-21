@@ -1,5 +1,4 @@
-github-getter
-=============
+# github-getter
 
 Searh GitHub Repos from your own site
 
